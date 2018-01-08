@@ -45,7 +45,9 @@
         });
 
         function sendAuthCode(token) {
-            axios.post('http://127.0.0.1:8080/api/authenticate', { token })
+            // axios.defaults.headers.common['Authorization'] = `Civic ${token}`;
+
+            axios.post('https://127.0.0.1:8080/api/authenticate', { token })
                 .then(({ data }) => {
                     console.log(data);
                 }).catch((error) => {
