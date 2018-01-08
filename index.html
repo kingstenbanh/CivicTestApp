@@ -1,0 +1,57 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://hosted-sip.civic.com/css/civic-modal.min.css">
+    <script src="https://hosted-sip.civic.com/js/civic.sip.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <title>Test Civic App</title>
+</head>
+<body>
+    <button id="signupButton" class="civic-button-a medium" type="button">
+        <span>Log in with Civic</span>
+    </button>
+
+    <script>
+        var civicSip = new civic.sip({ appId: 'S1FXOI1EG' });
+        var button = document.querySelector('#signupButton');
+        
+        button.addEventListener('click', () => {
+            civicSip.signup({
+                style: 'popup',
+                scopeRequest: civicSip.ScopeRequests.BASIC_SIGNUP,
+            });
+        });
+
+        civicSip.on('auth-code-received', (event) => {
+            const jwtToken = event.response;
+
+            console.log('received', event);
+            sendAuthCode(jwtToken);
+        });
+
+        civicSip.on('user-cancelled', (event) => {
+            console.log('canceled', event);
+        });
+
+        civicSip.on('read', (event) => {
+            console.log('read', event);
+        });
+
+        civicSip.on('civic-sip-error', ({ type, message }) => {
+            console.log(`Error type: ${type}`);
+            console.log(`Error message: ${message}`);
+        });
+
+        function sendAuthCode(token) {
+            axios.post('http://127.0.0.1:8080/api/authenticate', { token })
+                .then(({ data }) => {
+                    console.log(data);
+                }).catch((error) => {
+                    console.log(error);
+                });
+        }
+    </script>
+</body>
+</html>
